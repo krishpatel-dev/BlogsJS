@@ -1,4 +1,4 @@
-# ✍️ My Blog
+# 🌐 Blog Website
 
 A beautiful, modern blog web application built with **Node.js**, **Express.js**, and **EJS** templating engine. Features a sleek dark theme with vibrant gradients, smooth animations, and full responsive design.
 

@@ -1,0 +1,20 @@
+{
+  "name": "section-26",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "A beautiful blog web application built with Node.js, Express.js, and EJS",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "method-override": "^3.0.0"
+  }
+}

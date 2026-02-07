@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Blog - Home</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">✍️ My Blog</h1>
+      <nav>
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/posts/new" class="btn btn-primary">New Post</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <main class="main-content">
+      <div class="hero">
+        <h2 class="hero-title">Welcome to My Blog</h2>
+        <p class="hero-subtitle">Share your thoughts, stories, and ideas with the world</p>
+      </div>
+
+      <% if (posts.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <h3>No posts yet</h3>
+          <p>Start sharing your thoughts by creating your first blog post!</p>
+          <a href="/posts/new" class="btn btn-primary btn-large">Create Your First Post</a>
+        </div>
+      <% } else { %>
+        <div class="posts-grid">
+          <% posts.forEach(post => { %>
+            <article class="post-card">
+              <div class="post-header">
+                <h3 class="post-title">
+                  <a href="/posts/<%= post.id %>"><%= post.title %></a>
+                </h3>
+                <div class="post-meta">
+                  <span class="post-author">By <%= post.author %></span>
+                  <span class="post-date"><%= post.date %></span>
+                </div>
+              </div>
+              <div class="post-excerpt">
+                <%= post.content.substring(0, 200) %><%= post.content.length > 200 ? '...' : '' %>
+              </div>
+              <div class="post-actions">
+                <a href="/posts/<%= post.id %>" class="btn btn-secondary btn-small">Read More</a>
+                <div class="action-buttons">
+                  <a href="/posts/<%= post.id %>/edit" class="btn-icon" title="Edit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </a>
+                  <form action="/posts/<%= post.id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this post?')">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      <% } %>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <%= currentYear %> My Blog. Built with Node.js, Express & EJS</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Post - My Blog</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">✍️ My Blog</h1>
+      <nav>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/posts/new" class="nav-link active">New Post</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <main class="main-content">
+      <div class="form-container">
+        <h2 class="form-title">Create New Post</h2>
+        <p class="form-subtitle">Share your thoughts with the world</p>
+        
+        <form action="/posts" method="POST" class="post-form">
+          <div class="form-group">
+            <label for="title">Post Title</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              placeholder="Enter an engaging title..." 
+              required
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="author">Author Name</label>
+            <input 
+              type="text" 
+              id="author" 
+              name="author" 
+              placeholder="Your name..." 
+              required
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="content">Content</label>
+            <textarea 
+              id="content" 
+              name="content" 
+              rows="12" 
+              placeholder="Write your story..." 
+              required
+              class="form-textarea"
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <a href="/" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Publish Post</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <%= currentYear %> My Blog. Built with Node.js, Express & EJS by <b>Krish</b></p>
+    </div>
+  </footer>
+</body>
+</html>

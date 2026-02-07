@@ -12,10 +12,10 @@
 <body>
   <header class="header">
     <div class="header-content">
-      <h1 class="logo">✍️ My Blog</h1>
+      <h1 class="logo"><a href="/" style="text-decoration: none; color: inherit;">✍️ My Blog</a></h1>
       <nav>
         <a href="/" class="nav-link">Home</a>
-        <a href="/posts/new" class="nav-link">New Post</a>
+        <a href="/logout" class="btn btn-secondary btn-small" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
       </nav>
     </div>
   </header>
@@ -24,46 +24,111 @@
     <main class="main-content">
       <div class="form-container">
         <h2 class="form-title">Edit Post</h2>
-        <p class="form-subtitle">Make changes to your post</p>
-        
-        <form action="/posts/<%= post.id %>?_method=PUT" method="POST" class="post-form">
+        <p class="form-subtitle">Update your post</p>
+
+        <% if (error) { %>
+          <div class="alert alert-error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/posts/<%= post._id %>?_method=PUT" method="POST" class="post-form">
           <div class="form-group">
-            <label for="title">Post Title</label>
+            <label for="title">Title *</label>
             <input 
               type="text" 
               id="title" 
               name="title" 
-              value="<%= post.title %>" 
+              class="form-input" 
+              value="<%= post.title %>"
+              maxlength="200"
               required
-              class="form-input"
             >
           </div>
 
           <div class="form-group">
-            <label for="author">Author Name</label>
+            <label for="categories">Categories (comma-separated)</label>
             <input 
               type="text" 
-              id="author" 
-              name="author" 
-              value="<%= post.author %>" 
-              required
-              class="form-input"
+              id="categories" 
+              name="categories" 
+              class="form-input" 
+              value="<%= post.categories %>"
             >
           </div>
 
           <div class="form-group">
-            <label for="content">Content</label>
-            <textarea 
-              id="content" 
-              name="content" 
-              rows="12" 
-              required
-              class="form-textarea"
-            ><%= post.content %></textarea>
+            <label for="tags">Tags (comma-separated)</label>
+            <input 
+              type="text" 
+              id="tags" 
+              name="tags" 
+              class="form-input" 
+              value="<%= post.tags %>"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Images</label>
+            <div class="image-upload-section">
+              <input 
+                type="file" 
+                id="imageUpload" 
+                accept="image/*" 
+                multiple
+                style="display: none;"
+              >
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageUpload').click()">
+                Upload More Images
+              </button>
+              <div id="imagePreview" class="image-preview-grid">
+                <% if (post.images && post.images.length > 0) { %>
+                  <% post.images.forEach(img => { %>
+                    <div class="image-preview-item">
+                      <img src="<%= img %>" alt="Post image">
+                      <button type="button" class="remove-image-btn" onclick="removeExistingImage('<%= img %>', this)">×</button>
+                      <input type="hidden" name="images" value="<%= img %>">
+                    </div>
+                  <% }); %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="content">Content * (Markdown supported)</label>
+            <div class="markdown-editor">
+              <div class="markdown-toolbar">
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('**', '**')" title="Bold">
+                  <strong>B</strong>
+                </button>
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('*', '*')" title="Italic">
+                  <em>I</em>
+                </button>
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('## ', '')" title="Heading">
+                  H
+                </button>
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('[', '](url)')" title="Link">
+                  🔗
+                </button>
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('`', '`')" title="Code">
+                  &lt;/&gt;
+                </button>
+                <button type="button" class="toolbar-btn" onclick="insertMarkdown('- ', '')" title="List">
+                  ☰
+                </button>
+              </div>
+              <textarea 
+                id="content" 
+                name="content" 
+                class="form-textarea markdown-input"
+                required
+              ><%= post.content %></textarea>
+            </div>
           </div>
 
           <div class="form-actions">
-            <a href="/" class="btn btn-secondary">Cancel</a>
+            <a href="/posts/<%= post.slug %>" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Update Post</button>
           </div>
         </form>
@@ -76,5 +141,85 @@
       <p>&copy; <%= currentYear %> My Blog. Built with Node.js, Express & EJS</p>
     </div>
   </footer>
+
+  <script>
+    // Handle new image uploads
+    document.getElementById('imageUpload').addEventListener('change', async function(e) {
+      const files = e.target.files;
+      const formData = new FormData();
+      
+      for (let file of files) {
+        formData.append('images', file);
+      }
+
+      try {
+        const response = await fetch('/upload/images', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          data.imageUrls.forEach((url, index) => {
+            addImagePreview(url, data.filenames[index]);
+          });
+        } else {
+          alert('Upload failed: ' + data.error);
+        }
+      } catch (error) {
+        alert('Upload failed: ' + error.message);
+      }
+
+      e.target.value = '';
+    });
+
+    function addImagePreview(url, filename) {
+      const preview = document.getElementById('imagePreview');
+      
+      const div = document.createElement('div');
+      div.className = 'image-preview-item';
+      div.innerHTML = `
+        <img src="${url}" alt="Preview">
+        <button type="button" class="remove-image-btn" onclick="removeImage('${url}', '${filename}', this)">×</button>
+        <input type="hidden" name="images" value="${url}">
+      `;
+      preview.appendChild(div);
+    }
+
+    async function removeImage(url, filename, btn) {
+      if (!confirm('Remove this image?')) return;
+
+      try {
+        await fetch(`/upload/image/${filename}`, {
+          method: 'DELETE'
+        });
+
+        btn.closest('.image-preview-item').remove();
+      } catch (error) {
+        alert('Failed to remove image: ' + error.message);
+      }
+    }
+
+    function removeExistingImage(url, btn) {
+      if (!confirm('Remove this image?')) return;
+      btn.closest('.image-preview-item').remove();
+    }
+
+    function insertMarkdown(before, after) {
+      const textarea = document.getElementById('content');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selectedText = text.substring(start, end);
+      
+      const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
+      textarea.value = newText;
+      
+      textarea.focus();
+      textarea.selectionStart = start + before.length;
+      textarea.selectionEnd = start + before.length + selectedText.length;
+    }
+  </script>
 </body>
 </html>

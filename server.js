@@ -1,86 +1,72 @@
+import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import connectDB from './config/database.js';
+import passport from './config/passport.js';
+import { attachUser } from './middleware/auth.js';
+
+// Import routes
+import authRoutes from './routes/auth.js';
+import postRoutes from './routes/posts.js';
+import commentRoutes from './routes/comments.js';
+import uploadRoutes from './routes/upload.js';
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// In-memory storage for blog posts
-let posts = [];
-let nextId = 1;
+// Connect to MongoDB
+connectDB();
 
 // Middleware
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(methodOverride('_method'));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    touchAfter: 24 * 3600 // lazy session update
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+  }
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Attach user to locals for all templates
+app.use(attachUser);
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
 
 // Routes
+app.use('/', authRoutes);
+app.use('/', postRoutes);
+app.use('/', commentRoutes);
+app.use('/', uploadRoutes);
 
-// Home page - View all posts
-app.get('/', (req, res) => {
-  res.render('index', { posts: posts, currentYear: new Date().getFullYear() });
+// 404 handler
+app.use((req, res) => {
+  res.status(404).render('404', {
+    currentYear: new Date().getFullYear()
+  });
 });
 
-// New post form
-app.get('/posts/new', (req, res) => {
-  res.render('new', { currentYear: new Date().getFullYear() });
-});
-
-// Create new post
-app.post('/posts', (req, res) => {
-  const newPost = {
-    id: nextId++,
-    title: req.body.title,
-    author: req.body.author,
-    content: req.body.content,
-    date: new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  };
-  posts.unshift(newPost);
-  res.redirect('/');
-});
-
-// Edit post form
-app.get('/posts/:id/edit', (req, res) => {
-  const post = posts.find(p => p.id === parseInt(req.params.id));
-  if (post) {
-    res.render('edit', { post: post, currentYear: new Date().getFullYear() });
-  } else {
-    res.redirect('/');
-  }
-});
-
-// Update post
-app.put('/posts/:id', (req, res) => {
-  const post = posts.find(p => p.id === parseInt(req.params.id));
-  if (post) {
-    post.title = req.body.title;
-    post.author = req.body.author;
-    post.content = req.body.content;
-  }
-  res.redirect('/');
-});
-
-// Delete post
-app.delete('/posts/:id', (req, res) => {
-  posts = posts.filter(p => p.id !== parseInt(req.params.id));
-  res.redirect('/');
-});
-
-// View single post
-app.get('/posts/:id', (req, res) => {
-  const post = posts.find(p => p.id === parseInt(req.params.id));
-  if (post) {
-    res.render('post', { post: post, currentYear: new Date().getFullYear() });
-  } else {
-    res.redirect('/');
-  }
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
 app.listen(port, () => {

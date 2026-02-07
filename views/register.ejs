@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - My Blog</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo"><a href="/" style="text-decoration: none; color: inherit;">✍️ My Blog</a></h1>
+      <nav>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/login" class="btn btn-secondary btn-small">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <main class="main-content">
+      <div class="form-container">
+        <h2 class="form-title">Join Our Community</h2>
+        <p class="form-subtitle">Create an account to start blogging</p>
+
+        <% if (error) { %>
+          <div class="alert alert-error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/register" method="POST" class="post-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              class="form-input" 
+              placeholder="Choose a username"
+              minlength="3"
+              maxlength="30"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="form-input" 
+              placeholder="your@email.com"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="At least 6 characters"
+              minlength="6"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              class="form-input" 
+              placeholder="Re-enter your password"
+              required
+            >
+          </div>
+
+          <div class="form-actions">
+            <a href="/" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Register</button>
+          </div>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+          Already have an account? <a href="/login" style="color: var(--text-primary); text-decoration: underline;">Login here</a>
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <%= currentYear %> My Blog. Built with Node.js, Express & EJS</p>
+    </div>
+  </footer>
+</body>
+</html>

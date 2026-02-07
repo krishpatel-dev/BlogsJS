@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - My Blog</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo"><a href="/" style="text-decoration: none; color: inherit;">✍️ My Blog</a></h1>
+      <nav>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/register" class="btn btn-secondary btn-small">Register</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <main class="main-content">
+      <div class="form-container">
+        <h2 class="form-title">Welcome Back</h2>
+        <p class="form-subtitle">Login to continue sharing your thoughts</p>
+
+        <% if (error) { %>
+          <div class="alert alert-error">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/login" method="POST" class="post-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="form-input" 
+              placeholder="your@email.com"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="Enter your password"
+              required
+            >
+          </div>
+
+          <div class="form-actions">
+            <a href="/" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+          Don't have an account? <a href="/register" style="color: var(--text-primary); text-decoration: underline;">Register here</a>
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <%= currentYear %> My Blog. Built with Node.js, Express & EJS</p>
+    </div>
+  </footer>
+</body>
+</html>
